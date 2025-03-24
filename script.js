@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const questionsContainer = document.getElementById('questions-container');
     const resultsContainer = document.getElementById('results-container');
     const scoreDisplay = document.getElementById('score');
+    let questionDivs = []; // Store the question divs
 
     function displayQuestions() {
         questions.forEach((question, index) => {
@@ -20,8 +21,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         </label>
                     `).join('')}
                 </div>
+                <div class="result" id="result${index}"></div>
             `;
             questionsContainer.appendChild(questionDiv);
+            questionDivs.push(questionDiv); // Store the question div
+
+            // Add event listeners to each radio button
+            const radioButtons = questionDiv.querySelectorAll('input[type="radio"]');
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    const resultDiv = document.getElementById(`result${index}`);
+                    const chosenAnswer = parseInt(radio.value);
+                    if (chosenAnswer === question.correctAnswer) {
+                        resultDiv.textContent = "Correcto!";
+                        resultDiv.style.color = "green";
+                    } else {
+                        resultDiv.textContent = `Incorrecto. La respuesta correcta era: ${question.options[question.correctAnswer]}`;
+                        resultDiv.style.color = "red";
+                    }
+                });
+            });
         });
     }
 
@@ -29,9 +48,14 @@ document.addEventListener('DOMContentLoaded', () => {
         let score = 0;
         questions.forEach((question, index) => {
             const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
-            if (selectedOption && parseInt(selectedOption.value) === question.correctAnswer) {
-                score++;
-            }
+            const resultDiv = document.getElementById(`result${index}`);
+            if (selectedOption) {
+                const chosenAnswer = parseInt(selectedOption.value);
+                if (chosenAnswer === question.correctAnswer) {
+                    score++;
+                    
+                } 
+            } 
         });
         return score;
     }
@@ -45,4 +69,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
     displayQuestions();
 });
-
